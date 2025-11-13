@@ -11,6 +11,3 @@
 /blue-recipes /blue-recipes.html 200
 /admin /admin.html 200
 /login /login.html 200
-
-# Catch-all for SPA routing (but exclude static files)
-/* /index.html 200
