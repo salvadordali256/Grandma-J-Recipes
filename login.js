@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             You are already signed in as <strong>${existingUser.name || existingUser.username}</strong>.
             <div class="auth-actions">
                 <button id="logoutBtn" class="outline-btn">Log out</button>
-                <a href="admin.html" class="nav-btn accent">Go to Admin</a>
+                <a href="admin" class="nav-btn accent">Go to Admin</a>
             </div>
         `);
         document.getElementById('logoutBtn').addEventListener('click', () => {

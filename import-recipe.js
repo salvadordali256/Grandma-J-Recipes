@@ -131,7 +131,7 @@ function editExtractedRecipe() {
     }
 
     // Redirect to add recipe page
-    window.location.href = 'add-recipe.html?mode=edit-scan';
+    window.location.href = 'add-recipe?mode=edit-scan';
 }
 
 // URL Import
@@ -347,7 +347,7 @@ function saveUrlRecipe() {
     alert('Recipe imported successfully! You can view it in "My Recipes" or edit it in "Add Recipe".');
 
     // Redirect to my recipes page
-    window.location.href = 'my-recipes.html';
+    window.location.href = 'my-recipes';
 }
 
 // Helper function to parse recipe text intelligently

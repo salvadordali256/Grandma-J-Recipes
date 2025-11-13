@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adminWelcome').textContent = `Signed in as ${currentUser.name || currentUser.username}`;
     document.getElementById('btnLogout').addEventListener('click', () => {
         clearAuthUser();
-        window.location.href = 'login.html';
+        window.location.href = 'login';
     });
 
     initAdminState();

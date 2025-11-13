@@ -56,11 +56,11 @@ function clearAuthUser() {
     localStorage.removeItem(AUTH_KEYS.remember);
 }
 
-function requireAuth(redirectTarget = 'admin.html') {
+function requireAuth(redirectTarget = 'admin') {
     const user = getAuthUser();
     if (!user) {
         const params = new URLSearchParams({ redirect: redirectTarget });
-        window.location.href = `login.html?${params.toString()}`;
+        window.location.href = `login?${params.toString()}`;
         return null;
     }
     return user;

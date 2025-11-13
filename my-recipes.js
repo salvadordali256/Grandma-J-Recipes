@@ -69,7 +69,7 @@ function createCustomRecipeCard(recipe) {
             ${ingredientPreview ? `<p class="recipe-card-preview"><strong>Ingredients:</strong> ${ingredientPreview}...</p>` : ''}
         </div>
         <div class="recipe-card-footer">
-            <a href="recipe.html?id=${recipe.id}&custom=true" class="view-recipe-btn">View Recipe</a>
+            <a href="recipe?id=${recipe.id}&custom=true" class="view-recipe-btn">View Recipe</a>
             <button onclick="deleteRecipe(${recipe.id})" class="delete-recipe-btn">Delete</button>
         </div>
     `;
