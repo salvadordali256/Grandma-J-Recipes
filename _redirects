@@ -1,0 +1,2 @@
+# No redirects - direct file access only
+# This file explicitly tells Cloudflare Pages to not redirect anything
