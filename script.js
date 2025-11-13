@@ -481,11 +481,13 @@ function lazyLoadImages() {
     images.forEach(img => imageObserver.observe(img));
 }
 
-// Service Worker registration for PWA (optional future enhancement)
+// Service Worker unregistration - removing service worker that was causing back button issues
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => {
-            console.warn('Service worker registration failed:', err);
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            registrations.forEach(registration => {
+                registration.unregister();
+            });
         });
     });
 }
