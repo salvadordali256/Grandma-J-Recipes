@@ -272,7 +272,7 @@ function updateAuthNavLink() {
         });
     } else {
         link.textContent = 'Login';
-        link.href = 'login';
+        link.href = 'login.html';
     }
 }
 
@@ -327,13 +327,13 @@ function createRecipeCard(recipe) {
             ${clampHintId ? `<span class="sr-only" id="${clampHintId}">Additional directions truncated. Activate card to view the full recipe.</span>` : ''}
         </div>
         <div class="recipe-card-footer">
-            <a href="recipe?id=${encodeURIComponent(recipe.id)}" class="view-recipe-btn">View Recipe</a>
+            <a href="recipe.html?id=${encodeURIComponent(recipe.id)}" class="view-recipe-btn">View Recipe</a>
         </div>
     `;
 
     if (hasDetailLink) {
         const goToDetail = () => {
-            window.location.href = `recipe?id=${encodeURIComponent(recipe.id)}`;
+            window.location.href = `recipe.html?id=${encodeURIComponent(recipe.id)}`;
         };
 
         card.setAttribute('role', 'button');

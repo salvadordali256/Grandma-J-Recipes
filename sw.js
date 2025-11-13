@@ -2,7 +2,7 @@
 
 const CACHE_NAME = 'grandma-recipes-v1';
 const OFFLINE_ASSETS = [
-  '/',
+  'index.html',
   '/index.html',
   '/admin.html',
   '/login.html',

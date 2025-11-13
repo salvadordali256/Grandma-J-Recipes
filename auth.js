@@ -10,7 +10,7 @@ const DEFAULT_ADMIN_USERS = [
         username: 'pauline',
         name: 'Pauline J.',
         email: 'pauline@example.com',
-        role: 'admin',
+        role: 'admin.html',
         passwordHash: '8304dceac42c9f465b70f0f946217171400f01938af92536fc1403f3ea5ef261',
         createdAt: '2024-01-01T12:00:00Z'
     },
@@ -56,7 +56,7 @@ function clearAuthUser() {
     localStorage.removeItem(AUTH_KEYS.remember);
 }
 
-function requireAuth(redirectTarget = 'admin') {
+function requireAuth(redirectTarget = 'admin.html') {
     const user = getAuthUser();
     if (!user) {
         const params = new URLSearchParams({ redirect: redirectTarget });

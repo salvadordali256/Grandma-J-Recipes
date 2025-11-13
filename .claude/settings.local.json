@@ -13,7 +13,13 @@
       "Bash(/opt/homebrew/opt/postgresql@15/bin/psql:*)",
       "Bash(curl:*)",
       "Bash(python3:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(git rm:*)",
+      "Bash(cat:*)",
+      "Bash(cd:*)",
+      "Bash(cd /Users/kyle.jurgens/Grandma\\ J\\ Recipies && find:*)",
+      "Bash(find . -name \"*.js\" -not -path \"./server/*\" -not -path \"./node_modules/*\" -exec sed -i '' -e 's|href=\"\"recipe?|href=\"\"recipe.html?|g' -e 's|\"\"recipe?|\"\"recipe.html?|g' -e 's|window.location.href = `recipe?|window.location.href = `recipe.html?|g' {} ;)",
+      "Bash(find . -name \"*.js\" -not -path \"./server/*\" -not -path \"./node_modules/*\" -exec sed -i '' -e \"s|''my-recipes''|''my-recipes.html''|g\" -e 's|\"\"my-recipes\"\"|\"\"my-recipes.html\"\"|g' -e \"s|''add-recipe''|''add-recipe.html''|g\" -e 's|\"\"add-recipe\"\"|\"\"add-recipe.html\"\"|g' -e \"s|''login''|''login.html''|g\" -e 's|\"\"login\"\"|\"\"login.html\"\"|g' -e \"s|''admin''|''admin.html''|g\" -e 's|\"\"admin\"\"|\"\"admin.html\"\"|g' {} ;)"
     ],
     "deny": [],
     "ask": []

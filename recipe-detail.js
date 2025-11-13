@@ -55,7 +55,7 @@ function loadRecipeDetail() {
             <div class="error-message">
                 <h2>Recipe Not Found</h2>
                 <p>No recipe ID provided.</p>
-                <a href="/" class="btn-primary">Return to All Recipes</a>
+                <a href="index.html" class="btn-primary">Return to All Recipes</a>
             </div>
         `;
         return;
@@ -74,7 +74,7 @@ function loadRecipeDetail() {
             <div class="error-message">
                 <h2>Recipe Not Found</h2>
                 <p>Sorry, we couldn't find the recipe you're looking for.</p>
-                <a href="/" class="btn-primary">Return to All Recipes</a>
+                <a href="index.html" class="btn-primary">Return to All Recipes</a>
             </div>
         `;
         return;
@@ -128,14 +128,14 @@ function loadRecipeDetail() {
         `;
     }
 
-    const backLink = isCustom ? 'my-recipes' : '/';
+    const backLink = isCustom ? 'my-recipes.html' : 'index.html';
     const backText = isCustom ? '← Back to My Recipes' : '← Back to All Recipes';
     const sectionLabel = recipe.sectionLabel || getCategoryName(recipe.category);
     const neighbors = getNeighborRecipes(recipe.id);
     const navHtml = `
         <div class="recipe-detail-nav">
-            ${neighbors.prev ? `<a class="detail-nav-link" href="recipe?id=${encodeURIComponent(neighbors.prev.id)}">← ${escapeHtml(neighbors.prev.title)}</a>` : '<span></span>'}
-            ${neighbors.next ? `<a class="detail-nav-link" href="recipe?id=${encodeURIComponent(neighbors.next.id)}">${escapeHtml(neighbors.next.title)} →</a>` : '<span></span>'}
+            ${neighbors.prev ? `<a class="detail-nav-link" href="recipe.html?id=${encodeURIComponent(neighbors.prev.id)}">← ${escapeHtml(neighbors.prev.title)}</a>` : '<span></span>'}
+            ${neighbors.next ? `<a class="detail-nav-link" href="recipe.html?id=${encodeURIComponent(neighbors.next.id)}">${escapeHtml(neighbors.next.title)} →</a>` : '<span></span>'}
         </div>
     `;
 
