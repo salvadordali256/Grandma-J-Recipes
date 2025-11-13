@@ -1,9 +1,15 @@
-# Cloudflare Pages Redirects
+# Cloudflare Pages Redirects using Netlify-compatible format
 
-# Redirect root to index.html
-/ /index.html 200
+# Clean URLs with query parameter preservation
+/recipe/* /recipe.html?:splat 200
+/add-recipe/* /add-recipe.html?:splat 200
+/my-recipes/* /my-recipes.html?:splat 200
+/import-recipe/* /import-recipe.html?:splat 200
+/blue-recipes/* /blue-recipes.html?:splat 200
+/admin/* /admin.html?:splat 200
+/login/* /login.html?:splat 200
 
-# Handle HTML files without extension
+# Clean URLs without trailing slash
 /recipe /recipe.html 200
 /add-recipe /add-recipe.html 200
 /my-recipes /my-recipes.html 200
@@ -11,7 +17,3 @@
 /blue-recipes /blue-recipes.html 200
 /admin /admin.html 200
 /login /login.html 200
-
-# Catch-all for any unmatched routes (handles query params and client-side routing)
-# This must be LAST - it only catches paths that don't match the rules above
-/* /index.html 200
