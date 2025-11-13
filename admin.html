@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin control center for Grandma Pauline's Recipes">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Admin Center - Grandma Pauline's Recipes</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-body">
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Grandma Pauline's Recipes</h1>
+            <p class="site-subtitle">Admin Control Center</p>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="recipe-nav">
+                <a href="index.html" class="back-btn">← Back to Main Site</a>
+                <button onclick="window.print()" class="print-btn">🖨️ Print Dashboard</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main admin-main">
+        <div class="container admin-container">
+            <section class="admin-hero">
+                <div class="admin-hero-text">
+                    <p class="eyebrow">Operations dashboard</p>
+                    <h2>Monitor the collection, invite trusted editors, and highlight featured recipes.</h2>
+                    <p>These controls are currently local-only and perfect for prototyping how the real CMS will feel once authentication is wired up.</p>
+                    <div class="hero-actions">
+                        <span id="adminWelcome" class="sync-status">Signed in as demo user</span>
+                        <button class="outline-btn" id="btnLogout">Log out</button>
+                        <button class="nav-btn accent" id="btnSyncMock">Simulate Sync</button>
+                        <span id="syncStatus" class="sync-status" role="status" aria-live="polite">Last sync: never</span>
+                    </div>
+                </div>
+                <div class="admin-hero-insights">
+                    <div class="admin-stat-card">
+                        <p class="stat-label" id="adminStatRecipesLabel">Total Recipes</p>
+                        <p class="stat-value" id="adminStatRecipes" aria-labelledby="adminStatRecipesLabel">0</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <p class="stat-label" id="adminStatCustomLabel">Custom Recipes</p>
+                        <p class="stat-value" id="adminStatCustom" aria-labelledby="adminStatCustomLabel">0</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <p class="stat-label" id="adminStatFeaturedLabel">Featured</p>
+                        <p class="stat-value" id="adminStatFeatured" aria-labelledby="adminStatFeaturedLabel">0</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <p class="stat-label" id="adminStatUsersLabel">Registered Users</p>
+                        <p class="stat-value" id="adminStatUsers" aria-labelledby="adminStatUsersLabel">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-panel">
+                <header class="admin-panel-header">
+                    <div>
+                        <h3>Team Directory</h3>
+                        <p>Register new admins or remove access. (Local demo only.)</p>
+                    </div>
+                    <button id="btnExportUsers" class="outline-btn">Export Users CSV</button>
+                </header>
+                <div class="admin-panel-body">
+                    <form id="userForm" class="admin-form" novalidate>
+                        <div class="form-row">
+                            <label>
+                                Name
+                                <input type="text" id="userName" required maxlength="80" placeholder="e.g., Pauline Admin">
+                            </label>
+                            <label>
+                                Email
+                                <input type="email" id="userEmail" required placeholder="e.g., admin@example.com">
+                            </label>
+                            <label>
+                                Username
+                                <input type="text" id="userUsername" required maxlength="40" placeholder="e.g., pauline">
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label>
+                                Role
+                                <select id="userRole" required>
+                                    <option value="admin">Admin</option>
+                                    <option value="editor">Editor</option>
+                                    <option value="viewer">Viewer</option>
+                                </select>
+                            </label>
+                            <label>
+                                Temporary Password
+                                <input type="password" id="userPassword" required minlength="8" placeholder="min 8 characters">
+                            </label>
+                        </div>
+                        <p class="form-help-text">Passwords are stored as SHA-256 hashes for this demo. Share them securely with your team.</p>
+                        <button type="submit" class="nav-btn">Invite User</button>
+                    </form>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table" id="userTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-panel">
+                <header class="admin-panel-header">
+                    <div>
+                        <h3>Recipe Moderation</h3>
+                        <p>Search any recipe (blue imports + custom entries) and toggle the “Featured” badge.</p>
+                    </div>
+                    <input type="search" id="recipeSearch" placeholder="Search recipes..." class="admin-search">
+                </header>
+                <div class="admin-panel-body">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table" id="recipeTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Source</th>
+                                    <th>Featured</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-panel">
+                <header class="admin-panel-header">
+                    <div>
+                        <h3>Activity Log</h3>
+                        <p>Recent admin actions saved locally (max 25 entries).</p>
+                    </div>
+                    <button id="btnClearLog" class="outline-btn danger">Clear Log</button>
+                </header>
+                <div class="admin-panel-body">
+                    <ul class="activity-log" id="activityLog"></ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Grandma Pauline's Recipe Collection</p>
+            <p class="footer-note">Admin tools are currently local-only.</p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="blue-recipes-data.js"></script>
+    <script src="recipes.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

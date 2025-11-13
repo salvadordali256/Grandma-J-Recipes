@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your personal recipe collection">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>My Recipes - Grandma Pauline's Recipes</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Grandma Pauline's Recipes</h1>
+            <p class="site-subtitle">My Personal Collection</p>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="recipe-nav" style="justify-content: space-between;">
+                <a href="index.html" class="back-btn">← Back to All Recipes</a>
+                <a href="add-recipe.html" class="btn-primary" style="padding: 10px 20px; text-decoration: none;">+ Add Recipe</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <div id="myRecipesContainer">
+                <div id="recipeCount" class="recipe-count"></div>
+                <div id="myRecipeGrid" class="recipe-grid">
+                    <!-- Custom recipes will be loaded here -->
+                </div>
+                <div id="noRecipes" class="no-results" style="display: none;">
+                    <h2>No Recipes Yet</h2>
+                    <p>You haven't added any recipes yet. Start building your collection!</p>
+                    <a href="add-recipe.html" class="btn-primary" style="display: inline-block; margin-top: 20px; text-decoration: none;">+ Add Your First Recipe</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Grandma Pauline's Recipe Collection</p>
+            <p class="footer-note">Enjoy!</p>
+        </div>
+    </footer>
+
+    <script src="my-recipes.js"></script>
+</body>
+</html>

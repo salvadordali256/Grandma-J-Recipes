@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse every blue heading from Grandma Pauline's cookbook, organized by category.">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Blue Recipe Index - Grandma Pauline's Recipes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Grandma Pauline's Recipes</h1>
+            <p class="site-subtitle">Blue Heading Recipe Index</p>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="search-container">
+                    <a href="index.html" class="nav-link">&larr; Back to Main Site</a>
+                </div>
+                <div class="nav-actions">
+                    <a href="blue-recipes.html" class="nav-link active">Blue Index</a>
+                    <a href="my-recipes.html" class="nav-link">My Recipes</a>
+                    <a href="import-recipe.html" class="nav-link">📸 Import</a>
+                    <a href="add-recipe.html" class="nav-btn">+ Add Recipe</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="blue-hero">
+        <div class="container">
+            <div class="blue-hero-content">
+                <div>
+                    <h2>Every Blue Title, Digitized</h2>
+                    <p>This page mirrors the exact blue headings from Grandma Pauline's Word document (pages 20-95). Use it to find a dish quickly, cross reference spellings, or plan which recipes to digitize next.</p>
+                </div>
+                <div class="blue-search">
+                    <label for="blueSearch" class="sr-only">Search blue recipes</label>
+                    <input type="text" id="blueSearch" class="blue-search-input" placeholder="Search by recipe or category...">
+                    <button type="button" id="blueClear" class="blue-clear-btn">Clear</button>
+                </div>
+            </div>
+            <div class="blue-index-wrapper">
+                <h3 class="blue-index-title">Jump to Category</h3>
+                <div id="blueCategoryIndex" class="blue-index"></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="main">
+        <div class="container">
+            <div id="blueStats" class="blue-stats"></div>
+            <div id="blueNoResults" class="no-results" style="display:none;">
+                <p>No blue recipes match that search. Try another word.</p>
+            </div>
+            <div id="blueSectionList" class="blue-section-list">
+                <!-- Sections are rendered here -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Grandma Pauline's Recipe Collection</p>
+            <p class="footer-note">Preserving every page.</p>
+        </div>
+    </footer>
+
+    <script src="blue-recipes-data.js"></script>
+    <script src="blue-recipes-page.js"></script>
+</body>
+</html>

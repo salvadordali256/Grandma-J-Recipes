@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Log in to Grandma Pauline's recipe admin center">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Login - Grandma Pauline's Recipes</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="auth-body">
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Grandma Pauline's Recipes</h1>
+            <p class="site-subtitle">Sign in to manage the collection</p>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="recipe-nav">
+                <a href="index.html" class="back-btn">← Back to Main Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="auth-main">
+        <div class="auth-card" role="form">
+            <h2>Welcome back</h2>
+            <p>This demo login stores credentials locally. Invite users from the Admin dashboard and set their passwords there.</p>
+
+            <div id="loginNotice" class="form-errors" role="status" aria-live="polite" style="display:none;"></div>
+
+            <form id="loginForm" novalidate>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="e.g., pauline">
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter password">
+
+                <label class="remember-row">
+                    <input type="checkbox" id="rememberMe">
+                    Remember me on this device
+                </label>
+
+                <button type="submit" class="nav-btn accent">Sign In</button>
+            </form>
+
+            <div class="demo-accounts">
+                <p><strong>Default accounts</strong></p>
+                <ul>
+                    <li>Username: <code>pauline</code> / Password: <code>grandma-love</code> (Admin)</li>
+                    <li>Username: <code>kyle</code> / Password: <code>family-first</code> (Editor)</li>
+                </ul>
+                <p>You can add more users (with custom usernames/passwords) from the Admin → Team Directory section.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Grandma Pauline's Recipe Collection</p>
+            <p class="footer-note">Login is a front-end demo only.</p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

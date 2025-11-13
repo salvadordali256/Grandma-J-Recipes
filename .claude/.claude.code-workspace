@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../.git"
+		},
+		{
+			"path": "../functions"
+		},
+		{
+			"path": "../netlify"
+		},
+		{
+			"path": "../server"
+		},
+		{
+			"path": "../tools"
+		}
+	],
+	"settings": {}
+}

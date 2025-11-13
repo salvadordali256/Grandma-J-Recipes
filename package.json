@@ -1,0 +1,20 @@
+{
+  "name": "grandma-paulines-recipes",
+  "version": "1.0.0",
+  "description": "Grandma Pauline's cherished family recipe collection with OCR and URL import features",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8000",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "recipes",
+    "cooking",
+    "family-recipes",
+    "static-site"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

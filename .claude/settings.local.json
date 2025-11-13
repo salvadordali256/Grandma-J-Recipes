@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip3 install:*)",
+      "Bash(textutil -convert txt:*)",
+      "Bash(cat /tmp/desserts_section.txt)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

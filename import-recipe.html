@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Import recipes from photos or websites">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Import Recipe - Grandma Pauline's Recipes</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js'></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Grandma Pauline's Recipes</h1>
+            <p class="site-subtitle">Import Your Recipe</p>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="recipe-nav">
+                <a href="index.html" class="back-btn">← Back to All Recipes</a>
+                <a href="my-recipes.html" class="back-btn">My Recipes</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <div class="form-container">
+                <div class="form-intro">
+                    <h2>Import Your Recipe</h2>
+                    <p>Scan a photo of a recipe or import from a website URL</p>
+                </div>
+
+                <div class="import-options">
+                    <!-- Tab Navigation -->
+                    <div class="import-tabs">
+                        <button class="import-tab active" data-tab="scan">📷 Scan Photo</button>
+                        <button class="import-tab" data-tab="url">🔗 Import from URL</button>
+                        <button class="import-tab" data-tab="manual">✍️ Manual Entry</button>
+                    </div>
+
+                    <!-- Scan Photo Tab -->
+                    <div id="scan-tab" class="import-tab-content active">
+                        <div class="import-card">
+                            <h3>Scan Recipe from Photo</h3>
+                            <p class="import-description">Upload a photo of a recipe card or cookbook page. We'll extract the text for you!</p>
+
+                            <div class="scan-upload-area">
+                                <input type="file" id="scanImage" accept="image/*" class="form-input-file">
+                                <label for="scanImage" class="file-upload-label-import">
+                                    <span class="file-upload-icon">📸</span>
+                                    <span class="file-upload-text">Click to upload recipe photo</span>
+                                    <span class="file-upload-subtext">JPG, PNG, or PDF - Best results with clear, well-lit photos</span>
+                                </label>
+                            </div>
+
+                            <div id="scanPreview" class="scan-preview" style="display: none;">
+                                <img id="scanPreviewImg" src="" alt="Recipe scan">
+                                <button type="button" id="removeScan" class="remove-image-btn">✕ Remove</button>
+                            </div>
+
+                            <div id="scanProgress" class="scan-progress" style="display: none;">
+                                <div class="progress-spinner"></div>
+                                <p class="progress-text">Scanning recipe... This may take a moment.</p>
+                                <div class="progress-bar">
+                                    <div id="progressBarFill" class="progress-bar-fill"></div>
+                                </div>
+                            </div>
+
+                            <div id="scanResult" class="scan-result" style="display: none;">
+                                <h4>Extracted Text:</h4>
+                                <textarea id="extractedText" class="form-textarea" rows="15"></textarea>
+                                <div class="scan-actions">
+                                    <button id="editExtracted" class="btn-primary">✏️ Edit & Save Recipe</button>
+                                    <button id="rescanImage" class="btn-secondary">🔄 Scan Again</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URL Import Tab -->
+                    <div id="url-tab" class="import-tab-content">
+                        <div class="import-card">
+                            <h3>Import Recipe from URL</h3>
+                            <p class="import-description">Paste a link to a recipe from popular cooking websites</p>
+
+                            <div class="url-import-form">
+                                <div class="form-group">
+                                    <label for="recipeUrl" class="form-label">Recipe URL</label>
+                                    <input type="url" id="recipeUrl" class="form-input"
+                                           placeholder="https://www.example.com/recipe">
+                                </div>
+                                <button id="importUrl" class="btn-primary btn-large">Import Recipe</button>
+                            </div>
+
+                            <div id="urlProgress" class="scan-progress" style="display: none;">
+                                <div class="progress-spinner"></div>
+                                <p class="progress-text">Fetching recipe...</p>
+                            </div>
+
+                            <div id="urlResult" class="url-result" style="display: none;">
+                                <div class="url-preview">
+                                    <h4 id="urlTitle">Recipe Title</h4>
+                                    <div id="urlContent" class="url-content"></div>
+                                </div>
+                                <div class="scan-actions">
+                                    <button id="saveUrlRecipe" class="btn-primary">Save to My Recipes</button>
+                                    <button id="tryAnotherUrl" class="btn-secondary">Try Another URL</button>
+                                </div>
+                            </div>
+
+                            <div class="url-tips">
+                                <p><strong>💡 Tips:</strong></p>
+                                <ul>
+                                    <li>Works best with popular recipe websites</li>
+                                    <li>Some websites may not allow imports due to security restrictions</li>
+                                    <li>You can edit the imported recipe before saving</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manual Entry Tab -->
+                    <div id="manual-tab" class="import-tab-content">
+                        <div class="import-card">
+                            <h3>Manual Entry</h3>
+                            <p class="import-description">Prefer to type it yourself? Use our standard recipe form.</p>
+                            <a href="add-recipe.html" class="btn-primary btn-large" style="display: inline-block; margin-top: 20px; text-decoration: none;">Go to Recipe Form</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Grandma Pauline's Recipe Collection</p>
+            <p class="footer-note">Enjoy!</p>
+        </div>
+    </footer>
+
+    <script src="import-recipe.js"></script>
+</body>
+</html>

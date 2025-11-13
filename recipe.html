@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Recipe from Grandma Pauline's cherished family collection">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Recipe - Grandma Pauline's Recipes</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Grandma Pauline's Recipes</h1>
+            <p class="site-subtitle">A treasured collection of family recipes</p>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="recipe-nav">
+                <a href="index.html" class="back-btn">← Back to All Recipes</a>
+                <button onclick="window.print()" class="print-btn">🖨️ Print Recipe</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <article class="recipe-detail" id="recipeDetail">
+                <!-- Recipe content will be loaded here -->
+                <div class="loading">Loading recipe...</div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Grandma Pauline's Recipe Collection</p>
+            <p class="footer-note">Enjoy!</p>
+        </div>
+    </footer>
+
+    <script src="blue-recipes-data.js"></script>
+    <script src="recipes.js"></script>
+    <script src="recipe-detail.js"></script>
+</body>
+</html>

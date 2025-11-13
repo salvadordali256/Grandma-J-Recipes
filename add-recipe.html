@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add your own recipe to Grandma Pauline's collection">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Add Recipe - Grandma Pauline's Recipes</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Grandma Pauline's Recipes</h1>
+            <p class="site-subtitle">Add Your Own Recipe</p>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="recipe-nav">
+                <a href="index.html" class="back-btn">← Back to All Recipes</a>
+                <a href="my-recipes.html" class="back-btn">My Recipes</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <div class="form-container">
+                <div class="form-intro">
+                    <h2>Share Your Recipe</h2>
+                    <p>Add your favorite recipe to the collection. Include as much detail as you'd like!</p>
+                </div>
+
+                <div id="formErrors" class="form-errors" role="alert" aria-live="assertive" tabindex="-1" style="display: none;"></div>
+
+                <form id="addRecipeForm" class="recipe-form">
+                    <!-- Recipe Title -->
+                    <div class="form-group">
+                        <label for="recipeTitle" class="form-label required">Recipe Title</label>
+                        <input type="text" id="recipeTitle" name="title" class="form-input" required
+                               placeholder="e.g., Mom's Chocolate Chip Cookies">
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label for="recipeCategory" class="form-label required">Category</label>
+                        <select id="recipeCategory" name="category" class="form-select" required>
+                            <option value="">Select a category...</option>
+                            <option value="meats">Meats</option>
+                            <option value="oriental">Oriental Cooking</option>
+                            <option value="pasta">Pasta</option>
+                            <option value="pastry">Pastry & Pies</option>
+                            <option value="preserves">Preserves & Canning</option>
+                            <option value="poultry">Poultry</option>
+                            <option value="salads">Salads & Dressings</option>
+                            <option value="sandwiches">Sandwiches</option>
+                            <option value="sauces">Sauces & Gravies</option>
+                            <option value="soups">Soups</option>
+                            <option value="vegetables">Vegetables</option>
+                            <option value="appetizers">Appetizers</option>
+                            <option value="beverages">Beverages</option>
+                            <option value="bread">Bread</option>
+                            <option value="sweets">Sweets & Candy</option>
+                            <option value="casseroles">Casseroles</option>
+                            <option value="cake">Cakes</option>
+                            <option value="cookies">Cookies</option>
+                            <option value="desserts">Desserts</option>
+                            <option value="frozen">Frozen Desserts</option>
+                            <option value="diet">Diet Dishes</option>
+                            <option value="eggs">Eggs & Cheese</option>
+                            <option value="fish">Fish & Seafood</option>
+                            <option value="frostings">Frostings</option>
+                            <option value="fruits">Fruits</option>
+                        </select>
+                    </div>
+
+                    <!-- Two column layout for source and servings -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipeSource" class="form-label">Source</label>
+                            <input type="text" id="recipeSource" name="source" class="form-input"
+                                   placeholder="e.g., Aunt Mary, Family tradition">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipeServings" class="form-label">Servings</label>
+                            <input type="text" id="recipeServings" name="servings" class="form-input"
+                                   placeholder="e.g., 6-8, Makes 2 dozen">
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-group">
+                        <label for="recipeImage" class="form-label">Recipe Photo</label>
+                        <div class="image-upload-container">
+                            <input type="file" id="recipeImage" name="image" accept="image/*" class="form-input-file">
+                            <label for="recipeImage" class="file-upload-label">
+                                <span class="file-upload-icon">📷</span>
+                                <span class="file-upload-text">Click to upload a photo</span>
+                            </label>
+                            <div id="imagePreview" class="image-preview" style="display: none;">
+                                <img id="previewImg" src="" alt="Recipe preview">
+                                <button type="button" id="removeImage" class="remove-image-btn">✕ Remove</button>
+                            </div>
+                        </div>
+                        <small class="form-help">Optional: Add a photo of your finished dish (JPG, PNG, max 5MB)</small>
+                    </div>
+
+                    <!-- Ingredients -->
+                    <div class="form-group">
+                        <label for="recipeIngredients" class="form-label required">Ingredients</label>
+                        <div id="ingredientsList" class="ingredients-input-list">
+                            <div class="ingredient-item">
+                                <input type="text" class="form-input ingredient-input" placeholder="e.g., 2 cups flour" required>
+                                <button type="button" class="remove-ingredient-btn" style="display: none;">✕</button>
+                            </div>
+                        </div>
+                        <button type="button" id="addIngredient" class="btn-add-item">+ Add Another Ingredient</button>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="form-group">
+                        <label for="recipeInstructions" class="form-label required">Instructions</label>
+                        <textarea id="recipeInstructions" name="instructions" class="form-textarea" rows="10" required
+                                  placeholder="Enter step-by-step instructions for your recipe..."></textarea>
+                        <small class="form-help">You can use bullet points or number your steps</small>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary btn-large">Save Recipe</button>
+                        <button type="reset" class="btn-secondary btn-large">Clear Form</button>
+                        <a href="index.html" class="btn-text">Cancel</a>
+                    </div>
+                </form>
+
+                <!-- Success Message -->
+                <div id="successMessage" class="success-message" style="display: none;">
+                    <div class="success-icon">✓</div>
+                    <h3>Recipe Added Successfully!</h3>
+                    <p>Your recipe has been added to your personal collection.</p>
+                    <div class="success-actions">
+                        <a href="my-recipes.html" class="btn-primary">View My Recipes</a>
+                        <button onclick="location.reload()" class="btn-secondary">Add Another Recipe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Grandma Pauline's Recipe Collection</p>
+            <p class="footer-note">Enjoy!</p>
+        </div>
+    </footer>
+
+    <script src="add-recipe.js"></script>
+</body>
+</html>
