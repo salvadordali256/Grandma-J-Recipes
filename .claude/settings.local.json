@@ -10,7 +10,10 @@
       "WebFetch(domain:grandma-j-recipes.pages.dev)",
       "Bash(PGPASSWORD=D7AzAL70JGS2qurAPTasQJW6b4m3Ic9m psql:*)",
       "Bash(brew install:*)",
-      "Bash(/opt/homebrew/opt/postgresql@15/bin/psql:*)"
+      "Bash(/opt/homebrew/opt/postgresql@15/bin/psql:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(node -e:*)"
     ],
     "deny": [],
     "ask": []
