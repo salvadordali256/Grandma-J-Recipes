@@ -131,7 +131,7 @@ function editExtractedRecipe() {
     }
 
     // Redirect to add recipe page
-    window.location.href = 'add-recipe?mode=edit-scan';
+    window.location.href = 'add-recipe.html?mode=edit-scan';
 }
 
 // URL Import
@@ -198,11 +198,13 @@ async function fetchRecipeFromUrl(url) {
     const urlContent = document.getElementById('urlContent');
 
     // Detect which platform we're on (Netlify or Cloudflare Pages)
-    // Try Cloudflare Pages function first, fallback to Netlify
-    let apiEndpoint = '/functions/fetch-recipe'; // Cloudflare Pages format
+    // Cloudflare Pages uses the route name directly (no /functions prefix)
+    let apiEndpoint = '/fetch-recipe';
 
-    // If on Netlify, use Netlify functions format
-    if (window.location.hostname.includes('netlify')) {
+    const host = window.location.hostname;
+    const isNetlify = host.includes('netlify') || host.includes('127.0.0.1') || host.includes('localhost');
+
+    if (isNetlify) {
         apiEndpoint = '/.netlify/functions/fetch-recipe';
     }
 

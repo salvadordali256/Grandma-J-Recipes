@@ -60,7 +60,7 @@ function requireAuth(redirectTarget = 'admin.html') {
     const user = getAuthUser();
     if (!user) {
         const params = new URLSearchParams({ redirect: redirectTarget });
-        window.location.href = `login?${params.toString()}`;
+        window.location.href = `login.html?${params.toString()}`;
         return null;
     }
     return user;
