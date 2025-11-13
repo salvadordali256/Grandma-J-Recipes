@@ -1,0 +1,16 @@
+# Cloudflare Pages Redirects
+
+# Redirect root to index.html
+/ /index.html 200
+
+# Handle HTML files without extension
+/recipe /recipe.html 200
+/add-recipe /add-recipe.html 200
+/my-recipes /my-recipes.html 200
+/import-recipe /import-recipe.html 200
+/blue-recipes /blue-recipes.html 200
+/admin /admin.html 200
+/login /login.html 200
+
+# Catch-all for SPA routing (but exclude static files)
+/* /index.html 200
