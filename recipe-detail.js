@@ -128,7 +128,7 @@ function loadRecipeDetail() {
         `;
     }
 
-    const backLink = isCustom ? 'my-recipes.html' : 'index.html';
+    const backLink = isCustom ? 'my-recipes.html' : '/';
     const backText = isCustom ? '← Back to My Recipes' : '← Back to All Recipes';
     const sectionLabel = recipe.sectionLabel || getCategoryName(recipe.category);
     const neighbors = getNeighborRecipes(recipe.id);
