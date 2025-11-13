@@ -11,3 +11,7 @@
 /blue-recipes /blue-recipes.html 200
 /admin /admin.html 200
 /login /login.html 200
+
+# Catch-all for any unmatched routes (handles query params and client-side routing)
+# This must be LAST - it only catches paths that don't match the rules above
+/* /index.html 200
