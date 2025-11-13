@@ -1,0 +1,32 @@
+services:
+  # Backend API
+  - type: web
+    name: grandma-recipes-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8787
+      - key: DATABASE_URL
+        fromDatabase:
+          name: grandma-recipes-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 2h
+      - key: ALLOW_ORIGIN
+        value: https://grandmas-recipes.salvadordali256.net,https://grandma-j-recipes.pages.dev
+
+databases:
+  # PostgreSQL Database
+  - name: grandma-recipes-db
+    region: oregon
+    plan: free
+    databaseName: grandma_pauline
+    user: grandma_admin
