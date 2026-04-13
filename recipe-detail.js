@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadRecipeDetail();
 });
 
-function loadRecipeDetail() {
+async function loadRecipeDetail() {
     const urlParams = new URLSearchParams(window.location.search);
     const recipeIdParamRaw = urlParams.get('id');
     const recipeIdParam = recipeIdParamRaw ? decodeURIComponent(recipeIdParamRaw) : '';
@@ -63,7 +63,11 @@ function loadRecipeDetail() {
 
     let recipe;
     if (isCustom) {
-        const customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '[]');
+        if (window.CustomRecipeService?.apiAvailable()) {
+            await window.CustomRecipeService.syncFromBackend();
+        }
+        const customRecipes = window.CustomRecipeService?.getLocalRecipes?.() ||
+            JSON.parse(localStorage.getItem('customRecipes') || '[]');
         recipe = customRecipes.find(r => String(r.id) === recipeIdParam);
     } else {
         recipe = allRecipes.find(r => String(r.id) === recipeIdParam);
@@ -134,12 +138,16 @@ function loadRecipeDetail() {
     const neighbors = getNeighborRecipes(recipe.id);
     const navHtml = `
         <div class="recipe-detail-nav">
-            ${neighbors.prev ? `<a class="detail-nav-link" href="recipe.html?id=${encodeURIComponent(neighbors.prev.id)}">← ${escapeHtml(neighbors.prev.title)}</a>` : '<span></span>'}
-            ${neighbors.next ? `<a class="detail-nav-link" href="recipe.html?id=${encodeURIComponent(neighbors.next.id)}">${escapeHtml(neighbors.next.title)} →</a>` : '<span></span>'}
+            ${neighbors.prev ? `<a class="detail-nav-link" href="recipe.html?id=${encodeURIComponent(neighbors.prev.id)}">← ${escapeHtml(neighbors.prev.title)}</a>` : '<span class="detail-nav-limit">← First recipe</span>'}
+            ${neighbors.next ? `<a class="detail-nav-link" href="recipe.html?id=${encodeURIComponent(neighbors.next.id)}">${escapeHtml(neighbors.next.title)} →</a>` : '<span class="detail-nav-limit">Last recipe →</span>'}
         </div>
     `;
 
     // Build the complete recipe HTML
+    const cookingSteps = deriveCookingSteps(recipe);
+
+    const spiceAlert = isRecipeSpicy(recipe) ? '<span class="spice-alert">🌶️ Spice Alert</span>' : '';
+
     recipeDetail.innerHTML = `
         <div class="recipe-header-detail">
             <div class="recipe-title-section">
@@ -150,6 +158,7 @@ function loadRecipeDetail() {
                     ${recipe.source ? `<span class="recipe-source-detail">Source: ${escapeHtml(recipe.source)}</span>` : ''}
                     ${recipe.servings ? `<span class="recipe-servings-detail">Servings: ${escapeHtml(recipe.servings)}</span>` : ''}
                     ${isCustom ? '<span class="recipe-source-detail custom-indicator">✨ My Recipe</span>' : ''}
+                    ${spiceAlert}
                 </div>
             </div>
         </div>
@@ -165,12 +174,17 @@ function loadRecipeDetail() {
 
         <div class="recipe-footer-detail">
             <a href="${backLink}" class="btn-secondary">${backText}</a>
+            ${cookingSteps.length > 0 ? '<button class="btn-outline" id="cookingModeBtn">🍳 Cooking Mode</button>' : ''}
             <button onclick="window.print()" class="btn-primary">🖨️ Print Recipe</button>
         </div>
     `;
 
     // Scroll to top
     window.scrollTo(0, 0);
+
+    if (cookingSteps.length > 0) {
+        initCookingMode(recipe, cookingSteps);
+    }
 }
 
 // Get category display name
@@ -217,7 +231,177 @@ function getNeighborRecipes(currentId) {
     };
 }
 
-// Print functionality
+function deriveCookingSteps(recipe) {
+    const steps = [];
+    if (recipe.instructions) {
+        recipe.instructions
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(Boolean)
+            .forEach(line => {
+                const cleaned = line.replace(/^\d+\.\s*/, '');
+                if (cleaned) {
+                    steps.push(cleaned);
+                }
+            });
+    } else if (Array.isArray(recipe.contentLines)) {
+        recipe.contentLines.filter(Boolean).forEach(line => steps.push(line));
+    }
+    return steps;
+}
+
+function initCookingMode(recipe, steps) {
+    let overlay = document.getElementById('cookingModeOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'cookingModeOverlay';
+        overlay.innerHTML = `
+            <div class="cooking-mode-dialog" role="dialog" aria-modal="true">
+                <header class="cooking-mode-header">
+                    <div>
+                        <h2 id="cookingModeTitle"></h2>
+                        <p id="cookingModeMeta"></p>
+                    </div>
+                    <button id="closeCookingMode" class="btn-text">Close ✕</button>
+                </header>
+                <div class="cooking-mode-body">
+                    <div class="step-counter">
+                        Step <span id="cookingModeStepIndex">1</span> / <span id="cookingModeStepTotal">1</span>
+                    </div>
+                    <p id="cookingModeStepText" class="step-text"></p>
+                    <div class="cooking-mode-controls">
+                        <button id="prevCookingStep" class="btn-secondary">← Previous</button>
+                        <button id="nextCookingStep" class="btn-primary">Next →</button>
+                    </div>
+                </div>
+                <div class="cooking-mode-timer">
+                    <label>
+                        Set timer (minutes)
+                        <input type="number" id="cookingModeTimerInput" min="0" max="180" step="1" value="1">
+                    </label>
+                    <div class="timer-display" id="cookingModeTimerDisplay" aria-live="polite" aria-atomic="true">00:00</div>
+                    <p id="cookingModeTimerDone" class="timer-done-msg" aria-live="assertive" style="display:none;">⏰ Timer finished!</p>
+                    <div class="timer-buttons">
+                        <button id="startCookingTimer" class="btn-primary">Start Timer</button>
+                        <button id="pauseCookingTimer" class="btn-secondary">Pause</button>
+                        <button id="resetCookingTimer" class="btn-text">Reset</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    const state = {
+        steps,
+        current: 0,
+        timer: null,
+        remainingSeconds: 0
+    };
+
+    const titleEl = document.getElementById('cookingModeTitle');
+    const metaEl = document.getElementById('cookingModeMeta');
+    const stepIndexEl = document.getElementById('cookingModeStepIndex');
+    const stepTotalEl = document.getElementById('cookingModeStepTotal');
+    const stepTextEl = document.getElementById('cookingModeStepText');
+    const prevBtn = document.getElementById('prevCookingStep');
+    const nextBtn = document.getElementById('nextCookingStep');
+    const timerInput = document.getElementById('cookingModeTimerInput');
+    const timerDisplay = document.getElementById('cookingModeTimerDisplay');
+    const timerDoneMsg = document.getElementById('cookingModeTimerDone');
+    const startBtn = document.getElementById('startCookingTimer');
+    const pauseBtn = document.getElementById('pauseCookingTimer');
+    const resetBtn = document.getElementById('resetCookingTimer');
+    const closeBtn = document.getElementById('closeCookingMode');
+
+    function updateStep() {
+        stepIndexEl.textContent = state.current + 1;
+        stepTotalEl.textContent = state.steps.length;
+        stepTextEl.textContent = state.steps[state.current];
+        prevBtn.disabled = state.current === 0;
+        nextBtn.disabled = state.current === state.steps.length - 1;
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        return `${mins}:${secs}`;
+    }
+
+    function clearTimer() {
+        if (state.timer) {
+            clearInterval(state.timer);
+            state.timer = null;
+        }
+    }
+
+    function startTimer() {
+        const minutes = parseInt(timerInput.value, 10) || 0;
+        state.remainingSeconds = Math.max(minutes * 60, 0);
+        timerDisplay.textContent = formatTime(state.remainingSeconds);
+        clearTimer();
+        timerDoneMsg.style.display = 'none';
+        state.timer = setInterval(() => {
+            state.remainingSeconds -= 1;
+            if (state.remainingSeconds <= 0) {
+                clearTimer();
+                state.remainingSeconds = 0;
+                timerDisplay.textContent = '00:00';
+                timerDoneMsg.style.display = 'block';
+            } else {
+                timerDisplay.textContent = formatTime(state.remainingSeconds);
+            }
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        clearTimer();
+    }
+
+    function resetTimer() {
+        clearTimer();
+        timerDisplay.textContent = '00:00';
+        timerDoneMsg.style.display = 'none';
+        timerInput.value = '1';
+    }
+
+    document.getElementById('cookingModeBtn').onclick = () => {
+        overlay.classList.add('visible');
+        titleEl.textContent = recipe.title;
+        metaEl.textContent = recipe.servings ? `Serves ${recipe.servings}` : 'Cooking together';
+        state.current = 0;
+        updateStep();
+        resetTimer();
+    };
+
+    closeBtn.onclick = () => {
+        overlay.classList.remove('visible');
+        clearTimer();
+    };
+
+    prevBtn.onclick = () => {
+        if (state.current > 0) {
+            state.current -= 1;
+            updateStep();
+        }
+    };
+    nextBtn.onclick = () => {
+        if (state.current < state.steps.length - 1) {
+            state.current += 1;
+            updateStep();
+        }
+    };
+
+    startBtn.onclick = startTimer;
+    pauseBtn.onclick = pauseTimer;
+    resetBtn.onclick = resetTimer;
+}
+
+function isRecipeSpicy(recipe) {
+    const keywords = ['chipotle', 'jalapeno', 'jalapeño', 'spicy', 'cayenne', 'chili', 'chile', 'sriracha', 'pepper flakes', 'habanero'];
+    const haystack = `${(recipe.ingredients || []).join(' ')} ${(recipe.instructions || '')}`.toLowerCase();
+    return keywords.some(keyword => haystack.includes(keyword));
+}
 function printRecipe() {
     window.print();
 }

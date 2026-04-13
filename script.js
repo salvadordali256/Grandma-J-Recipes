@@ -9,7 +9,9 @@ function escapeHtml(text) {
 const baseRecipes = Array.isArray(window.recipes) ? window.recipes : [];
 const blueRecipeEntries = Array.isArray(window.blueRecipes) ? flattenBlueRecipes(window.blueRecipes) : [];
 const enhancedBaseRecipes = baseRecipes.map(recipe => ({ ...recipe, hasDetailPage: true }));
-const allRecipes = [...blueRecipeEntries, ...enhancedBaseRecipes];
+let publishedCustomRecipes = [];
+let allRecipes = [...blueRecipeEntries, ...enhancedBaseRecipes];
+const staticRecipes = [...blueRecipeEntries, ...enhancedBaseRecipes];
 
 const STORAGE_KEYS = {
     category: 'gpFilters:category',
@@ -73,6 +75,42 @@ function flattenBlueRecipes(data) {
     return entries;
 }
 
+async function loadPublishedCustomRecipes() {
+    try {
+        let published = [];
+        if (window.API_CONFIG?.useBackend && window.apiRequest) {
+            const response = await window.apiRequest(window.API_CONFIG.endpoints.recipes.public, {
+                method: 'GET'
+            });
+            if (Array.isArray(response)) {
+                published = response;
+            }
+        } else if (window.CustomRecipeService?.getLocalRecipes) {
+            published = window.CustomRecipeService.getLocalRecipes().filter(r => r.isPublic);
+        }
+
+        publishedCustomRecipes = (published || []).map(recipe => ({
+            id: recipe.id,
+            title: recipe.title || 'Family Favorite',
+            category: recipe.category || 'meats',
+            source: recipe.source || 'Family Submission',
+            servings: recipe.servings || '',
+            ingredients: recipe.ingredients || [],
+            instructions: recipe.instructions || '',
+            image: recipe.image || null,
+            hasDetailPage: true,
+            isCustom: true,
+            isPublished: true
+        }));
+
+        rebuildAllRecipes();
+        updateHeroStats();
+        filterAndDisplayRecipes();
+    } catch (error) {
+        console.warn('Unable to load published custom recipes', error);
+    }
+}
+
 // Global variables
 let currentCategory = 'all';
 let currentSearchTerm = '';
@@ -97,7 +135,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateHeroStats();
     setupEventListeners();
     updateAuthNavLink();
+    window.CustomRecipeService?.syncFromBackend();
+    loadPublishedCustomRecipes();
 });
+
+function rebuildAllRecipes() {
+    allRecipes = [...publishedCustomRecipes, ...staticRecipes];
+}
 
 // Setup event listeners
 function setupEventListeners() {
@@ -114,17 +158,41 @@ function setupEventListeners() {
 
     // Category filtering
     categoryButtons.forEach(btn => {
+        btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
         btn.addEventListener('click', function() {
-            // Remove active class from all buttons
-            categoryButtons.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
+            categoryButtons.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
             this.classList.add('active');
+            this.setAttribute('aria-pressed', 'true');
 
             currentCategory = this.getAttribute('data-category');
             sessionStorage.setItem(STORAGE_KEYS.category, currentCategory);
             filterAndDisplayRecipes();
         });
     });
+
+    // Clear filters button in no-results
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            currentSearchTerm = '';
+            currentCategory = 'all';
+            sessionStorage.removeItem(STORAGE_KEYS.search);
+            sessionStorage.removeItem(STORAGE_KEYS.category);
+            categoryButtons.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+                if (b.getAttribute('data-category') === 'all') {
+                    b.classList.add('active');
+                    b.setAttribute('aria-pressed', 'true');
+                }
+            });
+            filterAndDisplayRecipes();
+        });
+    }
 
     // Modal close functionality
     modalClose.addEventListener('click', closeModal);
@@ -246,11 +314,9 @@ function restoreFilters() {
 
     if (categoryButtons && categoryButtons.length) {
         categoryButtons.forEach(btn => {
-            if (btn.getAttribute('data-category') === currentCategory) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            const isActive = btn.getAttribute('data-category') === currentCategory;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
     }
 }
@@ -311,6 +377,7 @@ function createRecipeCard(recipe) {
         ${ingredientPreview ? `<p class="recipe-card-preview"><strong>Ingredients:</strong> ${ingredientPreview}${ingredientHasMore ? '...' : ''}</p>` : ''}
         ${instructionPreview ? `<p class="recipe-card-preview"><strong>Instructions:</strong> ${instructionPreview}</p>` : ''}
     ` : '';
+    const spiceBadge = isSpicyRecipe(recipe) ? '<span class="spicy-badge" aria-label="Spice alert">🌶️ Spice Alert</span>' : '';
 
     card.innerHTML = `
         <div class="recipe-card-header">
@@ -321,6 +388,7 @@ function createRecipeCard(recipe) {
         </div>
         <div class="recipe-card-body">
             <span class="recipe-card-category">${escapeHtml(getCategoryName(recipe.category))}</span>
+            ${spiceBadge}
             ${recipe.source ? `<p class="recipe-card-source">Source: ${escapeHtml(recipe.source)}</p>` : ''}
             ${recipe.servings ? `<p class="recipe-card-source">Servings: ${escapeHtml(recipe.servings)}</p>` : ''}
             ${(contentLinesHtml || previewHtml)}
@@ -393,6 +461,12 @@ function getCategoryName(category) {
         'fruits': 'Fruits'
     };
     return categoryNames[category] || category;
+}
+
+function isSpicyRecipe(recipe = {}) {
+    const keywords = ['chipotle', 'jalapeno', 'jalapeño', 'spicy', 'cayenne', 'chile', 'chili', 'habanero', 'sriracha', 'pepper flakes'];
+    const haystack = `${(recipe.ingredients || []).join(' ')} ${(recipe.instructions || '')}`.toLowerCase();
+    return keywords.some(keyword => haystack.includes(keyword));
 }
 
 // Show recipe modal

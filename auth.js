@@ -2,6 +2,7 @@ const AUTH_KEYS = {
     session: 'gpAuthUser',
     remember: 'gpRememberedUser'
 };
+const AUTH_TOKEN_KEY = 'gpAuthToken';
 
 const ADMIN_USER_KEY = 'gpAdminUsers';
 const DEFAULT_ADMIN_USERS = [
@@ -10,8 +11,8 @@ const DEFAULT_ADMIN_USERS = [
         username: 'pauline',
         name: 'Pauline J.',
         email: 'pauline@example.com',
-        role: 'admin.html',
-        passwordHash: '8304dceac42c9f465b70f0f946217171400f01938af92536fc1403f3ea5ef261',
+        role: 'admin',
+        passwordHash: '',
         createdAt: '2024-01-01T12:00:00Z'
     },
     {
@@ -20,7 +21,7 @@ const DEFAULT_ADMIN_USERS = [
         name: 'Kyle J.',
         email: 'kyle@example.com',
         role: 'editor',
-        passwordHash: 'cb098c7c6fb60ea4e46d6c68c6e3a27f56e2eb79aafc2cf759537402285b4d9b',
+        passwordHash: '',
         createdAt: '2024-02-14T08:30:00Z'
     }
 ];
@@ -51,9 +52,29 @@ function saveAuthUser(user, persist = false) {
     }
 }
 
+function saveAuthToken(token, persist = false) {
+    if (!token) {
+        sessionStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        return;
+    }
+    sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+    if (persist) {
+        localStorage.setItem(AUTH_TOKEN_KEY, token);
+    } else {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+    }
+}
+
+function getAuthToken() {
+    return sessionStorage.getItem(AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY) || null;
+}
+
 function clearAuthUser() {
     sessionStorage.removeItem(AUTH_KEYS.session);
     localStorage.removeItem(AUTH_KEYS.remember);
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
 function requireAuth(redirectTarget = 'admin.html') {
@@ -78,6 +99,13 @@ function saveAdminUsers(users) {
     localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(users));
 }
 
+// Hashes of passwords that were previously shipped as defaults and are now public knowledge.
+// Any account still using one of these gets its hash cleared, forcing a password reset.
+const COMPROMISED_HASHES = new Set([
+    '8304dceac42c9f465b70f0f946217171400f01938af92536fc1403f3ea5ef261',
+    'cb098c7c6fb60ea4e46d6c68c6e3a27f56e2eb79aafc2cf759537402285b4d9b'
+]);
+
 function ensureDefaultAdminUsers() {
     const existing = loadAdminUsers();
     if (!existing.length) {
@@ -90,7 +118,11 @@ function ensureDefaultAdminUsers() {
             user.username = user.email.split('@')[0];
             changed = true;
         }
-        if (!user.passwordHash) {
+        if (user.passwordHash && COMPROMISED_HASHES.has(user.passwordHash)) {
+            user.passwordHash = '';
+            changed = true;
+        }
+        if (!user.passwordHash && user.passwordHash !== '') {
             user.passwordHash = '';
             changed = true;
         }
@@ -103,15 +135,14 @@ function ensureDefaultAdminUsers() {
 
 async function hashPassword(plain) {
     if (!plain) return '';
-    if (window.crypto?.subtle && window.TextEncoder) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(plain);
-        const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    if (!window.crypto?.subtle || !window.TextEncoder) {
+        throw new Error('Secure hashing unavailable. Please use a modern browser.');
     }
-    // Fallback (demo only)
-    return plain;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plain);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 function getAdminUserStore() {

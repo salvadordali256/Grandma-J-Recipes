@@ -1,15 +1,38 @@
+function escHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function getSafeRedirect(defaultPath = 'admin.html') {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect') || defaultPath;
+    try {
+        const url = new URL(redirect, window.location.origin);
+        if (url.origin !== window.location.origin) {
+            return defaultPath;
+        }
+        return url.pathname + url.search + url.hash;
+    } catch {
+        return defaultPath;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('loginForm');
     const notice = document.getElementById('loginNotice');
     const store = window.AdminUserStore || {
         load: () => [],
-        hash: async (value) => value
+        hash: async () => { throw new Error('Auth module not loaded.'); }
     };
+    const useBackend = Boolean(window.API_CONFIG?.useBackend && window.apiRequest);
 
     const existingUser = getAuthUser();
     if (existingUser) {
         showInfo(`
-            You are already signed in as <strong>${existingUser.name || existingUser.username}</strong>.
+            You are already signed in as <strong>${escHtml(existingUser.name || existingUser.username)}</strong>.
             <div class="auth-actions">
                 <button id="logoutBtn" class="outline-btn">Log out</button>
                 <a href="admin.html" class="nav-btn accent">Go to Admin</a>
@@ -33,6 +56,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return showError('Username and password are required.');
         }
 
+        if (useBackend) {
+            try {
+                const response = await window.apiRequest(window.API_CONFIG.endpoints.auth.login, {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+                saveAuthUser(response.user, remember);
+                saveAuthToken(response.token, remember);
+                await window.CustomRecipeService?.syncFromBackend(true);
+                window.location.href = getSafeRedirect('admin.html');
+                return;
+            } catch (error) {
+                showError(error.message || 'Unable to sign in. Please check your credentials.');
+                return;
+            }
+        }
+
         const accounts = store.load();
         const account = accounts.find(acc => (acc.username || '').toLowerCase() === username);
         if (!account) {
@@ -52,9 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         saveAuthUser({ username: account.username, role: account.role, name: account.name || account.username }, remember);
-        const params = new URLSearchParams(window.location.search);
-        const redirect = params.get('redirect') || 'admin.html';
-        window.location.href = redirect;
+        window.location.href = getSafeRedirect('admin.html');
     });
 
     function showError(message) {

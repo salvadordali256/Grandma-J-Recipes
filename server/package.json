@@ -6,13 +6,16 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon src/server.js",
     "start": "node src/server.js",
-    "lint": "eslint \"src/**/*.js\""
+    "lint": "eslint \"src/**/*.js\"",
+    "migrate": "node scripts/run-migrations.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^8.0.0",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3"
@@ -20,6 +23,7 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "eslint": "^9.9.0",
+    "globals": "^16.5.0",
     "nodemon": "^3.1.4"
   }
 }

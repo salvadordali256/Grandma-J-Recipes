@@ -9,20 +9,28 @@ const FORM_LIMITS = {
     servingsMax: 60
 };
 
+let formHasContent = false;
+
 document.addEventListener('DOMContentLoaded', function() {
     setupFormHandlers();
+
+    const form = document.getElementById('addRecipeForm');
+    form.addEventListener('input', () => { formHasContent = true; });
+
+    window.addEventListener('beforeunload', (e) => {
+        if (formHasContent) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
 });
 
 function sanitizeInput(value = '') {
-    const temp = document.createElement('textarea');
-    temp.innerHTML = value;
-    return temp.value.trim();
+    return String(value).trim();
 }
 
 function sanitizeMultiline(value = '') {
-    const temp = document.createElement('textarea');
-    temp.innerHTML = value;
-    return temp.value.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    return String(value).replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 function showFormErrors(messages = []) {
@@ -42,6 +50,7 @@ function showFormErrors(messages = []) {
     `;
     container.style.display = 'block';
     container.classList.add('active');
+    container.setAttribute('tabindex', '-1');
     container.focus();
 }
 
@@ -155,7 +164,7 @@ function removeImage() {
 }
 
 // Handle form submission
-function handleFormSubmit(event) {
+async function handleFormSubmit(event) {
     event.preventDefault();
 
     const form = event.target;
@@ -208,11 +217,16 @@ function handleFormSubmit(event) {
 
     if (validationErrors.length) {
         showFormErrors(validationErrors);
-        document.getElementById('formErrors').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('formErrors').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         return;
     } else {
         showFormErrors([]);
     }
+
+    const submitBtn = form.querySelector('[type="submit"]');
+    const originalLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving…';
 
     // Create recipe object
     const recipe = {
@@ -225,18 +239,29 @@ function handleFormSubmit(event) {
         instructions,
         image: imageData,
         isCustom: true,
+        isPublic: false,
         dateAdded: new Date().toISOString()
     };
 
-    // Save to localStorage
-    saveRecipe(recipe);
-
-    // Show success message
-    showSuccessMessage();
+    try {
+        await saveRecipe(recipe);
+        formHasContent = false;
+        showSuccessMessage();
+    } catch (error) {
+        console.error(error);
+        alert('We could not save your recipe right now. Please try again in a moment.');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+    }
 }
 
-// Save recipe to localStorage
-function saveRecipe(recipe) {
+// Save recipe to localStorage / backend
+async function saveRecipe(recipe) {
+    if (window.CustomRecipeService?.saveRecipe) {
+        await window.CustomRecipeService.saveRecipe(recipe);
+        return;
+    }
     let customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '[]');
     customRecipes.push(recipe);
     localStorage.setItem('customRecipes', JSON.stringify(customRecipes));

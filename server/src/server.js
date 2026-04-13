@@ -1,15 +1,21 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import recipeRoutes from './routes/recipes.js';
 import userRoutes from './routes/users.js';
+import collectionRoutes from './routes/collections.js';
 
 dotenv.config();
 
 const app = express();
+app.use(helmet());
+const allowedOrigins = process.env.ALLOW_ORIGIN
+    ? process.env.ALLOW_ORIGIN.split(',').map(o => o.trim()).filter(Boolean)
+    : [];
 app.use(cors({
-    origin: process.env.ALLOW_ORIGIN?.split(',') || '*',
+    origin: allowedOrigins.length ? allowedOrigins : false,
     credentials: true
 }));
 app.use(express.json());
@@ -18,6 +24,7 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok', timestamp: Date.n
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/collections', collectionRoutes);
 
 const port = process.env.PORT || 8787;
 

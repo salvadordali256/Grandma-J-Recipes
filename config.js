@@ -20,17 +20,34 @@ const API_CONFIG = {
         },
         recipes: {
             list: '/recipes',
+            public: '/recipes/public',
             create: '/recipes',
             get: (id) => `/recipes/${id}`,
             update: (id) => `/recipes/${id}`,
             delete: (id) => `/recipes/${id}`,
-            featured: '/recipes/featured'
+            featured: '/recipes/featured',
+            mine: {
+                list: '/recipes/mine',
+                create: '/recipes/mine',
+                get: (id) => `/recipes/mine/${id}`,
+                delete: (id) => `/recipes/mine/${id}`,
+                publish: (id) => `/recipes/mine/${id}/publish`
+            }
         },
         users: {
             list: '/users',
             get: (id) => `/users/${id}`,
             update: (id) => `/users/${id}`,
             delete: (id) => `/users/${id}`
+        },
+        collections: {
+            mine: '/collections/mine',
+            create: '/collections',
+            update: (id) => `/collections/${id}`,
+            remove: (id) => `/collections/${id}`,
+            addRecipe: (id) => `/collections/${id}/recipes`,
+            removeRecipe: (collectionId, recipeId) => `/collections/${collectionId}/recipes/${recipeId}`,
+            public: (slug) => `/collections/public/${slug}`
         }
     }
 };
@@ -38,7 +55,7 @@ const API_CONFIG = {
 // Helper function to make API requests
 async function apiRequest(endpoint, options = {}) {
     const url = API_CONFIG.baseURL + endpoint;
-    const token = localStorage.getItem('authToken');
+    const token = sessionStorage.getItem('gpAuthToken') || localStorage.getItem('gpAuthToken');
 
     const defaultOptions = {
         headers: {
