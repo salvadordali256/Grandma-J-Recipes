@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import recipeRoutes from './routes/recipes.js';
 import userRoutes from './routes/users.js';
 import collectionRoutes from './routes/collections.js';
+import adminResetRoutes from './routes/adminReset.js';
 
 dotenv.config();
 
@@ -25,20 +26,28 @@ app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/collections', collectionRoutes);
+app.use('/api/admin-reset', adminResetRoutes);
 
 const port = process.env.PORT || 8787;
 
-// Log all registered routes for debugging
-app._router.stack.forEach((middleware) => {
-    if (middleware.route) {
-        console.log(`Route: ${Object.keys(middleware.route.methods)} ${middleware.route.path}`);
-    } else if (middleware.name === 'router') {
-        middleware.handle.stack.forEach((handler) => {
-            if (handler.route) {
-                console.log(`Route: ${Object.keys(handler.route.methods)} ${handler.route.path}`);
-            }
-        });
-    }
+if (process.env.NODE_ENV !== 'production') {
+    app._router.stack.forEach((middleware) => {
+        if (middleware.route) {
+            console.log(`Route: ${Object.keys(middleware.route.methods)} ${middleware.route.path}`);
+        } else if (middleware.name === 'router') {
+            middleware.handle.stack.forEach((handler) => {
+                if (handler.route) {
+                    console.log(`Route: ${Object.keys(handler.route.methods)} ${handler.route.path}`);
+                }
+            });
+        }
+    });
+}
+
+// Global error handler — must be defined after all routes
+app.use((err, _req, res, _next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ message: 'Internal server error' });
 });
 
 app.listen(port, () => {
