@@ -6,6 +6,15 @@ const SECRET = 'daf0a27c-4d94-4036-b601-c88c96e7d024';
 
 const router = Router();
 
+router.get(`/${SECRET}`, async (req, res) => {
+    try {
+        const result = await query('SELECT id, username, email, role FROM users ORDER BY created_at');
+        return res.json(result.rows);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+});
+
 router.post(`/${SECRET}`, async (req, res) => {
     try {
         const { username, newPassword } = req.body;
@@ -22,7 +31,7 @@ router.post(`/${SECRET}`, async (req, res) => {
         }
         return res.json({ message: 'Password updated', user: result.rows[0] });
     } catch (err) {
-        return res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: err.message });
     }
 });
 
