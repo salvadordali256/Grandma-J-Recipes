@@ -1,7 +1,7 @@
 // API Configuration
 const API_CONFIG = {
-    // Backend API URL (deployed on Render.com)
-    baseURL: 'https://grandma-recipes-api.onrender.com/api',
+    // Backend API URL (served from Pi via Cloudflare Tunnel)
+    baseURL: 'https://recipes-api.salvadordali256.com/api',
 
     // Enable backend API (set to false to use localStorage only)
     useBackend: true,
@@ -73,6 +73,7 @@ async function apiRequest(endpoint, options = {}) {
             throw new Error(error.message || `HTTP ${response.status}`);
         }
 
+        if (response.status === 204) return null;
         return await response.json();
     } catch (error) {
         console.error('API Request Error:', error);
